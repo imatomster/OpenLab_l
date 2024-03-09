@@ -1,13 +1,17 @@
+"use client";
+
 // import "./App.css";
-import { Web3Storage } from "web3.storage";
 import { useState } from "react";
+import { create } from "@web3-storage/w3up-client";
 
 export default function Page() {
   const [file, setFile] = useState(null);
   const [imageURI, setImageURI] = useState("");
   const [isUploading, setIsUploading] = useState(false);
-  const client = new Web3Storage({ token: process.env.REACT_APP_TOKEN });
-  const handleFileChange = (e) => {
+
+  // const client = await create();
+  // const client = new Web3Storage({ token: process.env.REACT_APP_TOKEN });
+  const handleFileChange = (e: any) => {
     e.preventDefault();
     if (e.target.files[0]) {
       setFile(e.target.files[0]);
