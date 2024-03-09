@@ -1,69 +1,41 @@
-"use client";
+import * as React from "react";
 import Link from "next/link";
 
+import { NavItem } from "@/types/nav";
 import { siteConfig } from "@/config/site";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { Icons } from "@/components/icons";
-import { MainNav } from "@/components/main-nav";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { useWeb3Modal } from "@web3modal/wagmi/react";
-import { useAccount, useDisconnect } from "wagmi";
-import { Label } from "@radix-ui/react-label";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 
-export function NavBar() {
-  const { open } = useWeb3Modal();
-  const { address, isConnecting, isDisconnected } = useAccount();
-  const { disconnect } = useDisconnect();
-
-  return (
-    <header className="bg-background sticky top-0 z-40 w-full border-b">
-      <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
-        <MainNav items={siteConfig.mainNav} />
-        <div className="flex flex-1 items-center justify-end space-x-4">
-          <nav className="flex items-center space-x-2">
-            {address ? (
-              <>
-                <AlertDialog>
-                  <AlertDialogTrigger>
-                    <Button>
-                      Connected
-                      <span className="ml-2 h-2 w-2 bg-green-500 rounded-full inline-block"></span>
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Disconnect?</AlertDialogTitle>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => disconnect()}>
-                        Disconnect
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-              </>
-            ) : (
-              <Button onClick={() => open()}>Connect Wallet</Button>
-            )}
-            <ThemeToggle />
-          </nav>
-        </div>
-      </div>
-    </header>
-  );
+interface MainNavProps {
+  items?: NavItem[];
 }
-export function ConnectButton() {
-  return <w3m-button />;
+
+export function NavBar({ items }: MainNavProps) {
+  return (
+    <div className="flex gap-6 md:gap-10">
+      <Link href="/" className="flex items-center space-x-2">
+        <Icons.logo className="h-6 w-6" />
+        <span className="inline-block font-bold">{siteConfig.name}</span>
+      </Link>
+      {items?.length ? (
+        <nav className="flex gap-6">
+          {items?.map(
+            (item, index) =>
+              item.href && (
+                <Link
+                  key={index}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center text-sm font-medium text-muted-foreground",
+                    item.disabled && "cursor-not-allowed opacity-80"
+                  )}
+                >
+                  {item.title}
+                </Link>
+              )
+          )}
+        </nav>
+      ) : null}
+    </div>
+  );
 }

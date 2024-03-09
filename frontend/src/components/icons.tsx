@@ -12,8 +12,8 @@ export const Icons = {
   sun: SunMedium,
   moon: Moon,
   twitter: Twitter,
-  llogo: (props: any) => (
-    <img src="/assets/flare_logo.png" alt="Logo" {...props} />
+  logo: (props: any) => (
+    <img src="../assets/flare_logo.png" alt="Logo" {...props} />
   ),
   gitHub: (props: LucideProps) => (
     <svg viewBox="0 0 438.549 438.549" {...props}>
