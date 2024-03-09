@@ -1,3 +1,10 @@
+# instructions
+
+- need poldaot js
+- cant use wallet connect, not comaptible with polkadot js
+- stored in local cache / global state
+- ipfs stores data / images
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started

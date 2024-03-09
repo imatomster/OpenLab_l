@@ -1,0 +1,69 @@
+"use client";
+import Link from "next/link";
+
+import { siteConfig } from "@/config/site";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Icons } from "@/components/icons";
+import { MainNav } from "@/components/main-nav";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { useWeb3Modal } from "@web3modal/wagmi/react";
+import { useAccount, useDisconnect } from "wagmi";
+import { Label } from "@radix-ui/react-label";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
+export function NavBar() {
+  const { open } = useWeb3Modal();
+  const { address, isConnecting, isDisconnected } = useAccount();
+  const { disconnect } = useDisconnect();
+
+  return (
+    <header className="bg-background sticky top-0 z-40 w-full border-b">
+      <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
+        <MainNav items={siteConfig.mainNav} />
+        <div className="flex flex-1 items-center justify-end space-x-4">
+          <nav className="flex items-center space-x-2">
+            {address ? (
+              <>
+                <AlertDialog>
+                  <AlertDialogTrigger>
+                    <Button>
+                      Connected
+                      <span className="ml-2 h-2 w-2 bg-green-500 rounded-full inline-block"></span>
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Disconnect?</AlertDialogTitle>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={() => disconnect()}>
+                        Disconnect
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </>
+            ) : (
+              <Button onClick={() => open()}>Connect Wallet</Button>
+            )}
+            <ThemeToggle />
+          </nav>
+        </div>
+      </div>
+    </header>
+  );
+}
+export function ConnectButton() {
+  return <w3m-button />;
+}
