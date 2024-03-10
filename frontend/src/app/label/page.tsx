@@ -1,53 +1,28 @@
 "use client";
 
-// import "./App.css";
-import { useState } from "react";
-import { create } from "@web3-storage/w3up-client";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { NavBar } from "@/components/NavBar";
+import { siteConfig } from "@/config/site";
 
 export default function Page() {
-  const [file, setFile] = useState(null);
-  const [imageURI, setImageURI] = useState("");
-  const [isUploading, setIsUploading] = useState(false);
+  const [jobs, setJobs] = useState([]);
 
-  // const client = await create();
-  // const client = new Web3Storage({ token: process.env.REACT_APP_TOKEN });
-  const handleFileChange = (e: any) => {
-    e.preventDefault();
-    if (e.target.files[0]) {
-      setFile(e.target.files[0]);
-    }
-  };
-  const uploadFile = async () => {
-    setIsUploading(true);
-    const fileToUpload = new File([file], file.name.split(" ").join(""), {
-      type: file.type,
-    });
-    const cid = await client.put([fileToUpload], {
-      name: file.name,
-    });
-    setImageURI(
-      `https://${cid}.ipfs.w3s.link/${file.name.split(" ").join("")}`
-    );
-    setFile(null);
-    setIsUploading(false);
-  };
+  useEffect(() => {
+    const jobs = JSON.parse(localStorage.getItem("jobs") || "[]");
+    setJobs(jobs);
+  }, []);
 
   return (
-    <div className="container">
-      <h1 className="title">Upload files with Web3.Storage</h1>
-      {isUploading && <div className="uploading">Uploading file...</div>}
-      <input className="input" type={"file"} onChange={handleFileChange} />
-      {file && (
-        <button className="upload" onClick={uploadFile}>
-          Upload File
-        </button>
-      )}
-      {imageURI.length > 0 && (
-        <div className="link">
-          <a href={imageURI}>Go To Your File</a>
-          {imageURI}
-        </div>
-      )}
-    </div>
+    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+      Hello
+      {jobs &&
+        jobs.map((job, index) => (
+          <a href={"https://" + job + ".ipfs.w3s.link"} className="underline">
+            {" "}
+            Job {index}
+          </a>
+        ))}
+    </main>
   );
 }

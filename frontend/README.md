@@ -5,6 +5,9 @@
 - stored in local cache / global state
 - ipfs stores data / images
 
+filecoin: below cement share behave bid limit aisle pact claim market hat fiber remain shop energy trial member bridge target exhaust medal clock bubble affair
+space: did:key:z6MkrzEvtS3FANWBbBGV2VEkTZzTSPZvRuS6Rj8u67cTcCKh
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started

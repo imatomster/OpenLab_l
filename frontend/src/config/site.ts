@@ -1,7 +1,7 @@
 export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
-  name: "OpenLabel",
+  name: "OpenLab_l",
   description:
     "Beautifully designed components built with Radix UI and Tailwind CSS.",
   navBar: [
