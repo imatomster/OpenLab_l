@@ -1,4 +1,4 @@
-# OpenLab_L
+# OpenLab_L - [Demo](https://www.youtube.com/watch?v=8F7ujNfhPKU)
 ![title Large](https://github.com/imatomster/OpenLab_l/assets/47396265/2b3ff4e2-d615-4a34-a6ad-0f637474eaf6)
 
 
