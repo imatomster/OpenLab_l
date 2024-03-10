@@ -9,12 +9,13 @@ import { ContractPromise } from '@polkadot/api-contract';
 import type { WeightV2 } from '@polkadot/types/interfaces';
 import type { Weight, ContractExecResult } from "@polkadot/types/interfaces";
 import { AbiMessage, ContractOptions } from "@polkadot/api-contract/types";
+import { blake2AsHex } from '@polkadot/util-crypto';
 
 const APP_NAME = 'ZeroRepV0';
 const APP_PROVIDER_URL = "wss://ws.test.azero.dev";
 
 const wsProvider = new WsProvider(APP_PROVIDER_URL);
-const APP_ADDRESS = "5FeZTF95jPLjutLGkBfvUBkThx9z2z4hKSvvW6541EnoEgSP";
+const APP_ADDRESS = "5GvXJ8rcUF7jreeN14NuMndao8ieUiet9HYksButJzHMKsQQ";
 
 const MAX_CALL_WEIGHT = new BN(5_000_000_000_000).isub(BN_ONE);
 
@@ -80,7 +81,7 @@ export default function Home() {
       .signAndSend(first.address, { signer: firstAddressInjector.signer });
   };
 
-  const queryContract = async () => {
+  const queryContract = async (method: string, args: unknown[]) => {
     if (!api || !contract) {
       console.error("API or contract is not initialized.");
       return;
@@ -101,11 +102,12 @@ export default function Home() {
       result,
       output,
       debugMessage,
-    } = await contract.query.addReputation(
+    } = await contract.query[method](
       contract.address, // This assumes your contract instance is correctly set up and contains an address
       {
         gasLimit: readOnlyGasLimit, // Use the readOnlyGasLimit as defined above
-      }
+      },
+      ...args
     );
 
     if (result.isOk && output) {
@@ -114,22 +116,6 @@ export default function Home() {
       console.error("Query failed:", result.toHuman());
     }
   };
-
-  const handleAddPost = async () => {
-    if (!api || !contract) {
-      console.error("API or contract is not initialized.");
-      return;
-    }
-    // Assuming api, contract, and userAccount are correctly set up
-    try {
-      const result = await sendTransaction(api, contract, accounts[0], "addPost", [/* args */]);
-      console.log("Transaction result:", result);
-      // Process result here
-    } catch (error) {
-      console.error("Transaction failed:", error);
-    }
-  };
-  
   
   const toContractAbiMessage = (
     contractPromise: ContractPromise,
@@ -236,7 +222,25 @@ export default function Home() {
       });
   };
 
-  
+  const handleAddPost = async () => {
+    if (!api || !contract) {
+      console.error("API or contract is not initialized.");
+      return;
+    }
+    // Assuming api, contract, and userAccount are correctly set up
+    try {
+      const filecoin_hash = blake2AsHex("ipfs");
+      //TODO: do signing thing here
+      const nullifier = blake2AsHex("nullifier");
+
+
+      const result = await sendTransaction(api, contract, accounts[0], "addPost", [filecoin_hash, nullifier, "red"]);
+      console.log("Transaction result:", result);
+      // Process result here
+    } catch (error) {
+      console.error("Transaction failed:", error);
+    }
+  };  
   
   return (
     <div>
@@ -249,10 +253,14 @@ export default function Home() {
           </li>
         ))}
       </ul>
-      <button onClick={queryContract}>Make transfer</button>
+      {/* <button onClick={() => queryContract("getNullifiers")}>Make transfer</button> */}
       <div>
         {/* Existing UI elements */}
         <button onClick={handleAddPost}>Add Post</button>
+      </div>  
+      <div>
+        {/* Existing UI elements */}
+        <button onClick={() => queryContract("getNullifiers", [blake2AsHex("ipfs")])}>View Posts</button>
       </div>  
     </div>
   );
