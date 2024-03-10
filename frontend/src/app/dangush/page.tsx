@@ -10,12 +10,13 @@ import type { WeightV2 } from '@polkadot/types/interfaces';
 import type { Weight, ContractExecResult } from "@polkadot/types/interfaces";
 import { AbiMessage, ContractOptions } from "@polkadot/api-contract/types";
 import { blake2AsHex } from '@polkadot/util-crypto';
+import { stringToHex } from "@polkadot/util";
 
 const APP_NAME = 'ZeroRepV0';
 const APP_PROVIDER_URL = "wss://ws.test.azero.dev";
 
 const wsProvider = new WsProvider(APP_PROVIDER_URL);
-const APP_ADDRESS = "5GvXJ8rcUF7jreeN14NuMndao8ieUiet9HYksButJzHMKsQQ";
+const APP_ADDRESS = "5CqVfn3jkQtN9qt1sv3Lc1GSm65MURhHkpAGqEWJJemmhb5R";
 
 const MAX_CALL_WEIGHT = new BN(5_000_000_000_000).isub(BN_ONE);
 
@@ -80,6 +81,35 @@ export default function Home() {
       .transferAllowDeath("5CQ3tamph5Fpht2TNpr76Dn9SN2LBnizFSLwRzj48oMhVSD3", finalAmount)
       .signAndSend(first.address, { signer: firstAddressInjector.signer });
   };
+
+  const signNullifier = async (data: String, nonce: Number) => {
+    if (!api) {
+      console.error("API is not initialized.");
+      return; // Or handle this case more gracefully
+    }
+
+    const first = accounts[0];
+
+    try {
+      const injector = await web3FromAddress(first.address);
+      const signRaw = injector?.signer?.signRaw;
+  
+      if (!!signRaw) {
+        const { signature } = await signRaw({
+          address: first.address,
+          data: stringToHex(`${data}${nonce}`),
+          type: 'bytes'
+        });
+    
+        console.log(signature);
+        return signature; // Return the signature
+      }
+    } catch (error) {
+      console.error("Error signing data:", error);
+      return null; // Return null in case of any error
+    }
+  };
+
 
   const queryContract = async (method: string, args: unknown[]) => {
     if (!api || !contract) {
@@ -164,6 +194,9 @@ export default function Home() {
     return { ok: true, value: gasRequired };
   };
   
+
+
+
   // Function to perform a transaction
   const sendTransaction = async (
     api: ApiPromise,
@@ -230,13 +263,21 @@ export default function Home() {
     // Assuming api, contract, and userAccount are correctly set up
     try {
       const filecoin_hash = blake2AsHex("ipfs");
+
       //TODO: do signing thing here
-      const nullifier = blake2AsHex("nullifier");
-
-
+      console.log("Starting to sign nullifier");
+      const nullifier = signNullifier(filecoin_hash, 1);
+      console.log("Finished signing nullifier:", nullifier);
+      
+      if (nullifier === null) {
+        console.error("Failed to sign nullifier.");
+        return;
+      }
+      
+      console.log("Starting transaction");
       const result = await sendTransaction(api, contract, accounts[0], "addPost", [filecoin_hash, nullifier, "red"]);
       console.log("Transaction result:", result);
-      // Process result here
+            // Process result here
     } catch (error) {
       console.error("Transaction failed:", error);
     }
@@ -260,7 +301,7 @@ export default function Home() {
       </div>  
       <div>
         {/* Existing UI elements */}
-        <button onClick={() => queryContract("getNullifiers", [blake2AsHex("ipfs")])}>View Posts</button>
+        <button onClick={(data) => queryContract("getNullifiers", [blake2AsHex("ipfs")])}>View Posts</button>
       </div>  
     </div>
   );

@@ -22,7 +22,7 @@ mod mytoken {
         // TODO: Merkle tree
 
         // A mapping from files to nullifiers of labels of that data
-        datatolabels: Mapping<Hash, Vec<(Hash, String)>>
+        datatolabels: Mapping<Hash, Vec<(Vec<u8>, String)>>
     }
 
     impl ZeroRep {
@@ -56,7 +56,7 @@ mod mytoken {
         
          */
         #[ink(message)]
-        pub fn add_post(&mut self, data: Hash, nullifier: Hash, label_val: String) {
+        pub fn add_post(&mut self, data: Hash, nullifier: Vec<u8>, label_val: String) {
             let mut list = self.datatolabels.get(data).unwrap_or(Vec::new());
             let val = (nullifier, label_val);
             // Update your mapping here
@@ -66,7 +66,7 @@ mod mytoken {
         }
 
         #[ink(message)]
-        pub fn get_nullifiers(&self, data: Hash) -> Vec<(Hash, String)> {            
+        pub fn get_nullifiers(&self, data: Hash) -> Vec<(Vec<u8>, String)> {            
             // Return the nullifier and label hashes from here
             self.datatolabels.get(data).unwrap_or(Vec::new())
         }
