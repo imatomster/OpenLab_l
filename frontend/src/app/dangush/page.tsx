@@ -93,20 +93,21 @@ export default function Home() {
     try {
       const injector = await web3FromAddress(first.address);
       const signRaw = injector?.signer?.signRaw;
-  
       if (!!signRaw) {
         const { signature } = await signRaw({
           address: first.address,
           data: stringToHex(`${data}${nonce}`),
           type: 'bytes'
         });
-    
         console.log(signature);
-        return signature; // Return the signature
+        return signature;
+      } else {
+        console.error("signRaw is not available.");
+        return null;
       }
     } catch (error) {
       console.error("Error signing data:", error);
-      return null; // Return null in case of any error
+      return null;
     }
   };
 
@@ -263,21 +264,20 @@ export default function Home() {
     // Assuming api, contract, and userAccount are correctly set up
     try {
       const filecoin_hash = blake2AsHex("ipfs");
-
-      //TODO: do signing thing here
+  
       console.log("Starting to sign nullifier");
-      const nullifier = signNullifier(filecoin_hash, 1);
+      const nullifier = await signNullifier(filecoin_hash, 1);
       console.log("Finished signing nullifier:", nullifier);
-      
+  
       if (nullifier === null) {
         console.error("Failed to sign nullifier.");
         return;
       }
-      
+  
       console.log("Starting transaction");
       const result = await sendTransaction(api, contract, accounts[0], "addPost", [filecoin_hash, nullifier, "red"]);
       console.log("Transaction result:", result);
-            // Process result here
+      // Process result here
     } catch (error) {
       console.error("Transaction failed:", error);
     }
@@ -297,11 +297,11 @@ export default function Home() {
       {/* <button onClick={() => queryContract("getNullifiers")}>Make transfer</button> */}
       <div>
         {/* Existing UI elements */}
-        <button onClick={handleAddPost}>Add Post</button>
+        <button onClick={handleAddPost}>Label Data</button>
       </div>  
       <div>
         {/* Existing UI elements */}
-        <button onClick={(data) => queryContract("getNullifiers", [blake2AsHex("ipfs")])}>View Posts</button>
+        <button onClick={(data) => queryContract("getNullifiers", [blake2AsHex("ipfs")])}>View Labels</button>
       </div>  
     </div>
   );
