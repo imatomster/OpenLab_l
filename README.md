@@ -1,4 +1,6 @@
 # OpenLab_L
+![title Large](https://github.com/imatomster/OpenLab_l/assets/47396265/2b3ff4e2-d615-4a34-a6ad-0f637474eaf6)
+
 
 A decentralized data labeling platform utilizing a zero-knowledge reputation system to enable an anonymous yet reputable marketplace for requesting and fulfilling data labeling.
 
