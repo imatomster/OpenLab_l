@@ -8,16 +8,18 @@ export default function Page() {
   const [isLoading, setIsLoading] = useState(false);
   const [imageURI, setImageURI] = useState("");
   const [text, setText] = useState("");
-  const [price, setPrice] = useState("");
+  const [requestLabelers, setRequestLabelers] = useState(1);
+  const [cost, setCost] = useState(5);
 
   const handleTextChange = (e) => {
     e.preventDefault();
     setText(e.target.value);
   };
 
-  const handlePriceChange = (e) => {
-    e.preventDefault();
-    setPrice(e.target.value);
+  const handleRequestLabelersChange = (e) => {
+    const labelers = parseInt(e.target.value);
+    setRequestLabelers(labelers);
+    setCost(labelers * 5);
   };
 
   const handleFileChange = (e) => {
@@ -33,7 +35,7 @@ export default function Page() {
       formData.append("files[]", file, file.name);
     });
 
-    const request = new Request("api/filecoin/uploadToIPFS", {
+    const request = new Request("/api/filecoin/uploadToIPFS", {
       method: "POST",
       body: formData,
     });
@@ -49,7 +51,7 @@ export default function Page() {
 
       const loStoDataType = {
         label: text,
-        price: parseInt(price),
+        price: String(cost),
       };
 
       if (!localStorage.getItem("jobs")) {
@@ -75,52 +77,72 @@ export default function Page() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <h1 className="title">Upload files with Web3.Storage</h1>
-      <div>
-        Label this data for a CV model on...
-        <input
-          className="border-2 border-gray-300 p-2 rounded-md"
-          type="text"
-          value={text}
-          onChange={handleTextChange}
-          placeholder="e.g. cars, cats, dogs"
-        />
-      </div>
-      {isLoading ? (
-        <ThreeDots />
-      ) : (
-        <input
-          className="input"
-          type="file"
-          onChange={handleFileChange}
-          multiple
-        />
-      )}
-
-      <input
-        className="border-2 border-gray-300 p-2 rounded-md"
-        type="text"
-        value={price}
-        onChange={handlePriceChange}
-        placeholder="0.01 eth"
-      />
-
-      {files.length > 0 && (
-        <button className="upload" onClick={uploadFilesToFileCoin}>
-          Upload Files
-        </button>
-      )}
-      {imageURI && (
-        <div className="link">
-          <a
-            className="underline"
-            href={"https://" + imageURI + ".ipfs.w3s.link"}
-          >
-            Go To Your Files here: {imageURI}
-          </a>
-          {}
+      <div className="bg-white bg-opacity-80 p-8 rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-transparent bg-clip-text">
+          Request Labeling
+        </h2>
+        <div className="mb-4">
+          <label className="block text-gray-700 font-bold mb-2">Topic</label>
+          <div className="flex items-center">
+            <input
+              className="border-2 border-gray-300 p-2 rounded-md w-full"
+              type="text"
+              value={text}
+              onChange={handleTextChange}
+              placeholder="e.g. cars, cats, dogs"
+            />
+            {isLoading ? (
+              <ThreeDots />
+            ) : (
+              <input
+                className="ml-4"
+                type="file"
+                onChange={handleFileChange}
+                multiple
+              />
+            )}
+          </div>
         </div>
-      )}
+        <div className="mb-4">
+          <label className="block text-gray-700 font-bold mb-2">
+            Request labelers
+          </label>
+          <input
+            className="border-2 border-gray-300 p-2 rounded-md w-full"
+            type="number"
+            min="1"
+            value={requestLabelers}
+            onChange={handleRequestLabelersChange}
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 font-bold mb-2">Cost</label>
+          <input
+            className="border-2 border-gray-300 p-2 rounded-md w-full"
+            type="text"
+            value={`$${cost}.00`}
+            readOnly
+          />
+        </div>
+        {files.length > 0 && (
+          <button
+            className="bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-md"
+            onClick={uploadFilesToFileCoin}
+          >
+            Request Task
+          </button>
+        )}
+        {imageURI && (
+          <div className="mt-4">
+            <a
+              className="text-blue-500 underline"
+              href={"https://" + imageURI + ".ipfs.w3s.link"}
+            >
+              Go To Your Files here: {imageURI}
+            </a>
+          </div>
+        )}
+      </div>
     </main>
   );
 }

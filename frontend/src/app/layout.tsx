@@ -18,7 +18,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body
+        className={`${inter.className} bg-cover bg-center`}
+        style={{
+          backgroundImage: "url('https://i.imgur.com/3aaKuwq.png')",
+        }}
+      >
         <NavBar items={siteConfig.navBar} />
         {children}
       </body>

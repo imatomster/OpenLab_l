@@ -1,5 +1,9 @@
 "use client";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { getImageByIndex, listIPFS } from "@/lib/web3Storage";
+import { ThreeDots } from "@/components/Loaders";
 
 export default function Page({
   params,
@@ -7,14 +11,67 @@ export default function Page({
   params: { index: string; cid: string };
 }) {
   const { index, cid } = params;
+  const searchParams = useSearchParams();
+  const label = searchParams.get("label");
+  const price = searchParams.get("price");
+  const CIDLength = searchParams.get("CIDLength");
+
+  const [image, setImage] = useState({});
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      const imgBlob = await getImageByIndex(cid, index);
+      setImage(imgBlob);
+      console.log(imgBlob);
+    };
+
+    fetchImages();
+  }, []);
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <span>
-        This is image {index} stored on {cid}
-      </span>
-      <span>Is this a picture of a {"cat"}</span>
-      <Link href={`/label/${cid}/${index}/result`}> Yes </Link>
-      <Link href={`/label/${cid}/${index}/result`}> No </Link>
+    <main className="flex flex-col items-center justify-center min-h-screen">
+      <div className="bg-white flex-col bg-opacity-80 p-8 rounded-lg shadow-md w-1/2 mx-auto flex justify-center items-center">
+        <span className="mb-5">
+          Is this image (number {index}) a {label}?
+        </span>
+        {image ? (
+          <img
+            src={image["img"]}
+            alt={image["name"]}
+            style={{ minWidth: "100%", maxWidth: "100%", height: "auto" }}
+          />
+        ) : (
+          <ThreeDots />
+        )}
+        <div className="mt-5 flex-row items-center justify-between">
+          <Link
+            href={{
+              pathname: `/label/${cid}/${index}/result`,
+              query: {
+                label: label,
+                CIDLength: CIDLength,
+                price: price,
+              },
+            }}
+            className="mr-2 bg-black text-white px-4 py-2 rounded-full shadow hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition duration-300"
+          >
+            Yes
+          </Link>
+          <Link
+            href={{
+              pathname: `/label/${cid}/${index}/result`,
+              query: {
+                label: label,
+                CIDLength: CIDLength,
+                price: price,
+              },
+            }}
+            className="bg-black text-white px-4 py-2 rounded-full shadow hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2 transition duration-300"
+          >
+            No
+          </Link>
+        </div>
+      </div>
     </main>
   );
 }

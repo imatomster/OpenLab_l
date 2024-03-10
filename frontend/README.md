@@ -1,5 +1,10 @@
 # instructions
 
+Ethoxford@1
+recall fat pride tool sphere region fiscal iron evolve mobile salmon control
+
+promote emotion crouch token essay essence thrive neglect kit summer report meat
+
 - need poldaot js
 - cant use wallet connect, not comaptible with polkadot js
 - stored in local cache / global state

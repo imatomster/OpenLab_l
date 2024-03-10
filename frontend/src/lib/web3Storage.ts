@@ -40,3 +40,51 @@ function makeFileObjects(obj: any) {
   ]
   return files
 }
+
+export async function listIPFS(cid: string) {
+  const gatewayUrl = `https://ipfs.io/ipfs/${cid}`;
+
+  let content = "";
+
+  try {
+    const response = await fetch(gatewayUrl);
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    content = await response.text();
+  } catch (error) {
+    console.error("Failed to fetch IPFS content:", error);
+    return
+  }
+
+  const regexPattern = `<a href="\\/ipfs\\/${cid}\\/([^"]+)">([^<]+)<\\/a>`;
+  const regex = new RegExp(regexPattern, 'g');
+
+  let match;
+  const files = [];
+
+  while ((match = regex.exec(content)) !== null) {
+    // match[1] is the file path and name relative to the CID directory
+    // match[2] is the text content of the <a> tag, which should be the file name
+    files.push({
+      path: match[1],
+      name: match[2]
+    });
+  }
+
+  // console.log(files);
+
+  // console.log("storage");
+  // console.log(content);
+  return files;
+}
+
+export async function getImageByIndex(cid: string, index: string) {
+  const listofIPFS = await listIPFS(cid);
+  const imageDict = listofIPFS[parseInt(index)];
+
+  const gatewayUrl = `https://${cid}.ipfs.w3s.link/${imageDict["path"]}`;
+
+  const res = { name: imageDict["name"], img: gatewayUrl };
+  return res;
+}

@@ -14,8 +14,8 @@ export const siteConfig = {
       href: "/label",
     },
     {
-      title: "DanGush",
-      href: "/dangush",
+      title: "alephzero",
+      href: "/alephzero",
     },
   ],
   links: {

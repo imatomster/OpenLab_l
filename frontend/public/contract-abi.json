@@ -1,6 +1,6 @@
 {
   "source": {
-    "hash": "0x246f17d0c89be25fe1b6bd41a59f10cb71a0ff6a9f8e17d7afa87f833c7e73c9",
+    "hash": "0x13ace9b670ece68f277ad4d097526a48bd02fb2261a9a764b931397f3a470bb0",
     "language": "ink! 4.3.0",
     "compiler": "rustc 1.78.0-nightly",
     "build_info": {
@@ -14,7 +14,7 @@
     }
   },
   "contract": {
-    "name": "mytoken",
+    "name": "ZeroRepV0",
     "version": "0.1.0",
     "authors": [
       "[your_name] <[your_email]>"
@@ -23,7 +23,17 @@
   "spec": {
     "constructors": [
       {
-        "args": [],
+        "args": [
+          {
+            "label": "init_value",
+            "type": {
+              "displayName": [
+                "u32"
+              ],
+              "type": 0
+            }
+          }
+        ],
         "default": false,
         "docs": [
           "Initialize merkle tree null values"
@@ -35,7 +45,7 @@
             "ink_primitives",
             "ConstructorResult"
           ],
-          "type": 6
+          "type": 1
         },
         "selector": "0x9bae9d5e"
       }
@@ -46,13 +56,13 @@
         "displayName": [
           "AccountId"
         ],
-        "type": 14
+        "type": 5
       },
       "balance": {
         "displayName": [
           "Balance"
         ],
-        "type": 15
+        "type": 8
       },
       "blockNumber": {
         "displayName": [
@@ -64,7 +74,7 @@
         "displayName": [
           "ChainExtension"
         ],
-        "type": 17
+        "type": 11
       },
       "hash": {
         "displayName": [
@@ -77,7 +87,7 @@
         "displayName": [
           "Timestamp"
         ],
-        "type": 16
+        "type": 10
       }
     },
     "events": [],
@@ -86,14 +96,14 @@
         "ink",
         "LangError"
       ],
-      "type": 8
+      "type": 3
     },
     "messages": [
       {
         "args": [],
         "default": false,
         "docs": [],
-        "label": "add_user",
+        "label": "add_labeler",
         "mutates": true,
         "payable": false,
         "returnType": {
@@ -101,40 +111,12 @@
             "ink",
             "MessageResult"
           ],
-          "type": 6
+          "type": 1
         },
-        "selector": "0x46f5a0fa"
+        "selector": "0xef5b1bd1"
       },
       {
-        "args": [
-          {
-            "label": "data",
-            "type": {
-              "displayName": [
-                "Hash"
-              ],
-              "type": 9
-            }
-          },
-          {
-            "label": "nullifier",
-            "type": {
-              "displayName": [
-                "Vec"
-              ],
-              "type": 3
-            }
-          },
-          {
-            "label": "label_val",
-            "type": {
-              "displayName": [
-                "String"
-              ],
-              "type": 5
-            }
-          }
-        ],
+        "args": [],
         "default": false,
         "docs": [],
         "label": "add_post",
@@ -145,35 +127,9 @@
             "ink",
             "MessageResult"
           ],
-          "type": 6
+          "type": 1
         },
         "selector": "0x961c42d6"
-      },
-      {
-        "args": [
-          {
-            "label": "data",
-            "type": {
-              "displayName": [
-                "Hash"
-              ],
-              "type": 9
-            }
-          }
-        ],
-        "default": false,
-        "docs": [],
-        "label": "get_nullifiers",
-        "mutates": false,
-        "payable": false,
-        "returnType": {
-          "displayName": [
-            "ink",
-            "MessageResult"
-          ],
-          "type": 11
-        },
-        "selector": "0x799f8fbc"
       },
       {
         "args": [],
@@ -187,35 +143,9 @@
             "ink",
             "MessageResult"
           ],
-          "type": 6
+          "type": 4
         },
         "selector": "0xb5f3c5b8"
-      },
-      {
-        "args": [
-          {
-            "label": "_nullifier",
-            "type": {
-              "displayName": [
-                "Hash"
-              ],
-              "type": 9
-            }
-          }
-        ],
-        "default": false,
-        "docs": [],
-        "label": "verify_reputation",
-        "mutates": false,
-        "payable": false,
-        "returnType": {
-          "displayName": [
-            "ink",
-            "MessageResult"
-          ],
-          "type": 12
-        },
-        "selector": "0xcb2991e5"
       }
     ]
   },
@@ -226,50 +156,12 @@
           "fields": [
             {
               "layout": {
-                "root": {
-                  "layout": {
-                    "struct": {
-                      "fields": [
-                        {
-                          "layout": {
-                            "leaf": {
-                              "key": "0x9a473268",
-                              "ty": 0
-                            }
-                          },
-                          "name": "0"
-                        },
-                        {
-                          "layout": {
-                            "leaf": {
-                              "key": "0x9a473268",
-                              "ty": 0
-                            }
-                          },
-                          "name": "1"
-                        }
-                      ],
-                      "name": "(A, B)"
-                    }
-                  },
-                  "root_key": "0x9a473268"
+                "leaf": {
+                  "key": "0x00000000",
+                  "ty": 0
                 }
               },
-              "name": "moderation_action"
-            },
-            {
-              "layout": {
-                "root": {
-                  "layout": {
-                    "leaf": {
-                      "key": "0x10a50c4b",
-                      "ty": 1
-                    }
-                  },
-                  "root_key": "0x10a50c4b"
-                }
-              },
-              "name": "datatolabels"
+              "name": "data"
             }
           ],
           "name": "ZeroRep"
@@ -291,59 +183,12 @@
       "id": 1,
       "type": {
         "def": {
-          "sequence": {
-            "type": 2
-          }
-        }
-      }
-    },
-    {
-      "id": 2,
-      "type": {
-        "def": {
-          "tuple": [
-            3,
-            5
-          ]
-        }
-      }
-    },
-    {
-      "id": 3,
-      "type": {
-        "def": {
-          "sequence": {
-            "type": 4
-          }
-        }
-      }
-    },
-    {
-      "id": 4,
-      "type": {
-        "def": {
-          "primitive": "u8"
-        }
-      }
-    },
-    {
-      "id": 5,
-      "type": {
-        "def": {
-          "primitive": "str"
-        }
-      }
-    },
-    {
-      "id": 6,
-      "type": {
-        "def": {
           "variant": {
             "variants": [
               {
                 "fields": [
                   {
-                    "type": 7
+                    "type": 2
                   }
                 ],
                 "index": 0,
@@ -352,7 +197,7 @@
               {
                 "fields": [
                   {
-                    "type": 8
+                    "type": 3
                   }
                 ],
                 "index": 1,
@@ -364,11 +209,11 @@
         "params": [
           {
             "name": "T",
-            "type": 7
+            "type": 2
           },
           {
             "name": "E",
-            "type": 8
+            "type": 3
           }
         ],
         "path": [
@@ -377,7 +222,7 @@
       }
     },
     {
-      "id": 7,
+      "id": 2,
       "type": {
         "def": {
           "tuple": []
@@ -385,7 +230,7 @@
       }
     },
     {
-      "id": 8,
+      "id": 3,
       "type": {
         "def": {
           "variant": {
@@ -404,13 +249,102 @@
       }
     },
     {
+      "id": 4,
+      "type": {
+        "def": {
+          "variant": {
+            "variants": [
+              {
+                "fields": [
+                  {
+                    "type": 0
+                  }
+                ],
+                "index": 0,
+                "name": "Ok"
+              },
+              {
+                "fields": [
+                  {
+                    "type": 3
+                  }
+                ],
+                "index": 1,
+                "name": "Err"
+              }
+            ]
+          }
+        },
+        "params": [
+          {
+            "name": "T",
+            "type": 0
+          },
+          {
+            "name": "E",
+            "type": 3
+          }
+        ],
+        "path": [
+          "Result"
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "type": {
+        "def": {
+          "composite": {
+            "fields": [
+              {
+                "type": 6,
+                "typeName": "[u8; 32]"
+              }
+            ]
+          }
+        },
+        "path": [
+          "ink_primitives",
+          "types",
+          "AccountId"
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "type": {
+        "def": {
+          "array": {
+            "len": 32,
+            "type": 7
+          }
+        }
+      }
+    },
+    {
+      "id": 7,
+      "type": {
+        "def": {
+          "primitive": "u8"
+        }
+      }
+    },
+    {
+      "id": 8,
+      "type": {
+        "def": {
+          "primitive": "u128"
+        }
+      }
+    },
+    {
       "id": 9,
       "type": {
         "def": {
           "composite": {
             "fields": [
               {
-                "type": 10,
+                "type": 6,
                 "typeName": "[u8; 32]"
               }
             ]
@@ -427,143 +361,12 @@
       "id": 10,
       "type": {
         "def": {
-          "array": {
-            "len": 32,
-            "type": 4
-          }
-        }
-      }
-    },
-    {
-      "id": 11,
-      "type": {
-        "def": {
-          "variant": {
-            "variants": [
-              {
-                "fields": [
-                  {
-                    "type": 1
-                  }
-                ],
-                "index": 0,
-                "name": "Ok"
-              },
-              {
-                "fields": [
-                  {
-                    "type": 8
-                  }
-                ],
-                "index": 1,
-                "name": "Err"
-              }
-            ]
-          }
-        },
-        "params": [
-          {
-            "name": "T",
-            "type": 1
-          },
-          {
-            "name": "E",
-            "type": 8
-          }
-        ],
-        "path": [
-          "Result"
-        ]
-      }
-    },
-    {
-      "id": 12,
-      "type": {
-        "def": {
-          "variant": {
-            "variants": [
-              {
-                "fields": [
-                  {
-                    "type": 13
-                  }
-                ],
-                "index": 0,
-                "name": "Ok"
-              },
-              {
-                "fields": [
-                  {
-                    "type": 8
-                  }
-                ],
-                "index": 1,
-                "name": "Err"
-              }
-            ]
-          }
-        },
-        "params": [
-          {
-            "name": "T",
-            "type": 13
-          },
-          {
-            "name": "E",
-            "type": 8
-          }
-        ],
-        "path": [
-          "Result"
-        ]
-      }
-    },
-    {
-      "id": 13,
-      "type": {
-        "def": {
-          "primitive": "bool"
-        }
-      }
-    },
-    {
-      "id": 14,
-      "type": {
-        "def": {
-          "composite": {
-            "fields": [
-              {
-                "type": 10,
-                "typeName": "[u8; 32]"
-              }
-            ]
-          }
-        },
-        "path": [
-          "ink_primitives",
-          "types",
-          "AccountId"
-        ]
-      }
-    },
-    {
-      "id": 15,
-      "type": {
-        "def": {
-          "primitive": "u128"
-        }
-      }
-    },
-    {
-      "id": 16,
-      "type": {
-        "def": {
           "primitive": "u64"
         }
       }
     },
     {
-      "id": 17,
+      "id": 11,
       "type": {
         "def": {
           "variant": {}

@@ -1,25 +1,26 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { web3Enable, web3Accounts, web3FromAddress } from '@polkadot/extension-dapp';
-import { ApiPromise, WsProvider } from '@polkadot/api';
-import { BN, BN_ONE } from '@polkadot/util';
-import appMetadata from '@/public/contract-abi.json';
-import { ContractPromise } from '@polkadot/api-contract';
-import type { WeightV2 } from '@polkadot/types/interfaces';
+import { useState, useEffect } from "react";
+import {
+  web3Enable,
+  web3Accounts,
+  web3FromAddress,
+} from "@polkadot/extension-dapp";
+import { ApiPromise, WsProvider } from "@polkadot/api";
+import { BN, BN_ONE } from "@polkadot/util";
+import appMetadata from "@/public/contract-abi.json";
+import { ContractPromise } from "@polkadot/api-contract";
+import type { WeightV2 } from "@polkadot/types/interfaces";
 import type { Weight, ContractExecResult } from "@polkadot/types/interfaces";
 import { AbiMessage, ContractOptions } from "@polkadot/api-contract/types";
-import { blake2AsHex } from '@polkadot/util-crypto';
-import { stringToHex } from "@polkadot/util";
 
-const APP_NAME = 'ZeroRepV0';
+const APP_NAME = "ZeroRepV0";
 const APP_PROVIDER_URL = "wss://ws.test.azero.dev";
 
 const wsProvider = new WsProvider(APP_PROVIDER_URL);
-const APP_ADDRESS = "5CqVfn3jkQtN9qt1sv3Lc1GSm65MURhHkpAGqEWJJemmhb5R";
+const APP_ADDRESS = "5FeZTF95jPLjutLGkBfvUBkThx9z2z4hKSvvW6541EnoEgSP";
 
 const MAX_CALL_WEIGHT = new BN(5_000_000_000_000).isub(BN_ONE);
-
 
 // Define the types for your accounts and extensions if they're not already defined
 type InjectedAccountWithMeta = Awaited<ReturnType<typeof web3Accounts>>[number];
@@ -27,7 +28,6 @@ type InjectedExtension = Awaited<ReturnType<typeof web3Enable>>[number];
 type Result<T, E = Error> = { ok: true; value: T } | { ok: false; error: E };
 
 export default function Home() {
-
   const [extensions, setExtensions] = useState<InjectedExtension[]>([]);
   const [accounts, setAccounts] = useState<InjectedAccountWithMeta[]>([]); // Explicitly type the state here
   const [api, setApi] = useState<ApiPromise | null>(null);
@@ -56,9 +56,7 @@ export default function Home() {
 
     setExtensions(injectedExtensions);
 
-    const accounts = await web3Accounts(
-      { extensions: ["aleph-zero-signer"] }
-    );
+    const accounts = await web3Accounts({ extensions: ["aleph-zero-signer"] });
 
     console.log(accounts);
     setAccounts(accounts); // This should now work without type errors
@@ -74,55 +72,29 @@ export default function Home() {
 
     const firstAddressInjector = await web3FromAddress(first.address);
     const transferAmount = new BN(1);
-    const unitAdjustment = new BN(10).pow(new BN(api.registry.chainDecimals[0]));
+    const unitAdjustment = new BN(10).pow(
+      new BN(api.registry.chainDecimals[0])
+    );
     const finalAmount = transferAmount.mul(unitAdjustment);
 
     await api.tx.balances
-      .transferAllowDeath("5CQ3tamph5Fpht2TNpr76Dn9SN2LBnizFSLwRzj48oMhVSD3", finalAmount)
+      .transferAllowDeath(
+        "5CQ3tamph5Fpht2TNpr76Dn9SN2LBnizFSLwRzj48oMhVSD3",
+        finalAmount
+      )
       .signAndSend(first.address, { signer: firstAddressInjector.signer });
   };
 
-  const signNullifier = async (data: String, nonce: Number) => {
-    if (!api) {
-      console.error("API is not initialized.");
-      return; // Or handle this case more gracefully
-    }
-
-    const first = accounts[0];
-
-    try {
-      const injector = await web3FromAddress(first.address);
-      const signRaw = injector?.signer?.signRaw;
-      if (!!signRaw) {
-        const { signature } = await signRaw({
-          address: first.address,
-          data: stringToHex(`${data}${nonce}`),
-          type: 'bytes'
-        });
-        console.log(signature);
-        return signature;
-      } else {
-        console.error("signRaw is not available.");
-        return null;
-      }
-    } catch (error) {
-      console.error("Error signing data:", error);
-      return null;
-    }
-  };
-
-
-  const queryContract = async (method: string, args: unknown[]) => {
+  const queryContract = async () => {
     if (!api || !contract) {
       console.error("API or contract is not initialized.");
       return;
     }
 
-    const readOnlyGasLimit = api.registry.createType('WeightV2', {
+    const readOnlyGasLimit = api.registry.createType("WeightV2", {
       refTime: new BN(1_000_000_000_000),
       proofSize: MAX_CALL_WEIGHT,
     }) as WeightV2;
-
 
     // Assuming `getByAccount` is a method in your contract that requires an `accountId`
     // Replace `getByAccount` with the actual method you wish to call and adjust parameters accordingly
@@ -133,12 +105,11 @@ export default function Home() {
       result,
       output,
       debugMessage,
-    } = await contract.query[method](
+    } = await contract.query.addReputation(
       contract.address, // This assumes your contract instance is correctly set up and contains an address
       {
         gasLimit: readOnlyGasLimit, // Use the readOnlyGasLimit as defined above
-      },
-      ...args
+      }
     );
 
     if (result.isOk && output) {
@@ -147,24 +118,49 @@ export default function Home() {
       console.error("Query failed:", result.toHuman());
     }
   };
-  
+
+  const handleAddPost = async () => {
+    if (!api || !contract) {
+      console.error("API or contract is not initialized.");
+      return;
+    }
+    // Assuming api, contract, and userAccount are correctly set up
+    try {
+      const result = await sendTransaction(
+        api,
+        contract,
+        accounts[0],
+        "addPost",
+        [
+          /* args */
+        ]
+      );
+      console.log("Transaction result:", result);
+      // Process result here
+    } catch (error) {
+      console.error("Transaction failed:", error);
+    }
+  };
+
   const toContractAbiMessage = (
     contractPromise: ContractPromise,
     message: string
   ): Result<AbiMessage, string> => {
-    const value = contractPromise.abi.messages.find((m) => m.method === message);
-  
+    const value = contractPromise.abi.messages.find(
+      (m) => m.method === message
+    );
+
     if (!value) {
       const messages = contractPromise?.abi.messages
         .map((m) => m.method)
         .join(", ");
-  
+
       const error = `"${message}" not found in metadata.spec.messages: [${messages}]`;
       console.error(error);
-  
+
       return { ok: false, error };
     }
-  
+
     return { ok: true, value };
   };
 
@@ -194,9 +190,6 @@ export default function Home() {
 
     return { ok: true, value: gasRequired };
   };
-  
-
-
 
   // Function to perform a transaction
   const sendTransaction = async (
@@ -256,36 +249,11 @@ export default function Home() {
       });
   };
 
-  const handleAddPost = async () => {
-    if (!api || !contract) {
-      console.error("API or contract is not initialized.");
-      return;
-    }
-    // Assuming api, contract, and userAccount are correctly set up
-    try {
-      const filecoin_hash = blake2AsHex("ipfs");
-  
-      console.log("Starting to sign nullifier");
-      const nullifier = await signNullifier(filecoin_hash, 1);
-      console.log("Finished signing nullifier:", nullifier);
-  
-      if (nullifier === null) {
-        console.error("Failed to sign nullifier.");
-        return;
-      }
-  
-      console.log("Starting transaction");
-      const result = await sendTransaction(api, contract, accounts[0], "addPost", [filecoin_hash, nullifier, "red"]);
-      console.log("Transaction result:", result);
-      // Process result here
-    } catch (error) {
-      console.error("Transaction failed:", error);
-    }
-  };  
-  
   return (
     <div>
-      <button onClick={loadAccountsFromExtensions}>Connect to extensions</button>
+      <button onClick={loadAccountsFromExtensions}>
+        Connect to extensions
+      </button>
       <h2>Signer accounts</h2>
       <ul>
         {accounts.map(({ address, meta: { name } }) => (
@@ -294,15 +262,11 @@ export default function Home() {
           </li>
         ))}
       </ul>
-      {/* <button onClick={() => queryContract("getNullifiers")}>Make transfer</button> */}
+      <button onClick={queryContract}>Make transfer</button>
       <div>
         {/* Existing UI elements */}
-        <button onClick={handleAddPost}>Label Data</button>
-      </div>  
-      <div>
-        {/* Existing UI elements */}
-        <button onClick={(data) => queryContract("getNullifiers", [blake2AsHex("ipfs")])}>View Labels</button>
-      </div>  
+        <button onClick={handleAddPost}>Add Post</button>
+      </div>
     </div>
   );
 }
