@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { web3Enable, web3Accounts, web3FromAddress } from '@polkadot/extension-dapp';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { ApiPromise, WsProvider } from '@polkadot/api';
-import { BN, BN_ONE } from '@polkadot/util';
-import appMetadata from '@/public/contract-abi.json';
 import { ContractPromise } from '@polkadot/api-contract';
-import type { WeightV2 } from '@polkadot/types/interfaces';
+import { web3Enable, web3Accounts, web3FromAddress } from '@polkadot/extension-dapp';
+import appMetadata from '@/public/contract-abi.json';
+import { BN, BN_ONE } from '@polkadot/util';
+import type { WeightV2 } from "@polkadot/types/interfaces";
 import type { Weight, ContractExecResult } from "@polkadot/types/interfaces";
 import { AbiMessage, ContractOptions } from "@polkadot/api-contract/types";
 import { blake2AsHex } from '@polkadot/util-crypto';
@@ -20,14 +20,34 @@ const APP_ADDRESS = "5CqVfn3jkQtN9qt1sv3Lc1GSm65MURhHkpAGqEWJJemmhb5R";
 
 const MAX_CALL_WEIGHT = new BN(5_000_000_000_000).isub(BN_ONE);
 
-
 // Define the types for your accounts and extensions if they're not already defined
 type InjectedAccountWithMeta = Awaited<ReturnType<typeof web3Accounts>>[number];
 type InjectedExtension = Awaited<ReturnType<typeof web3Enable>>[number];
 type Result<T, E = Error> = { ok: true; value: T } | { ok: false; error: E };
 
-export default function Home() {
 
+interface AlephContextType {
+    loadAccountsFromExtensions: () => Promise<void>;
+    queryContract: (method: string, args: unknown[]) => Promise<void>;
+    handleAddPost: (value: String) => Promise<void>;
+    // Add other fields and functions as needed
+  }
+
+// Provide a default value that matches the context type
+const defaultContextValue: AlephContextType = {
+    loadAccountsFromExtensions: async () => {}, // Empty async function as a placeholder
+    handleAddPost: async (value: String) => {}, // Empty async function as a placeholder
+    queryContract: async (method: string, args: unknown[]) => {}, // Empty async function as a placeholder
+    // Initialize other fields with appropriate default values
+};
+const AlephContext = createContext<AlephContextType>(defaultContextValue);
+
+
+export const useAleph = () => useContext(AlephContext);
+type AlephProviderProps = React.PropsWithChildren<{}>;
+
+export const AlephProvider: React.FC<AlephProviderProps> = ({ children }) => {
+  
   const [extensions, setExtensions] = useState<InjectedExtension[]>([]);
   const [accounts, setAccounts] = useState<InjectedAccountWithMeta[]>([]); // Explicitly type the state here
   const [api, setApi] = useState<ApiPromise | null>(null);
@@ -124,7 +144,7 @@ export default function Home() {
     }) as WeightV2;
 
 
-    // Assuming `sByAccount` is a method in your contract that requires an `accountId`
+    // Assuming `getByAccount` is a method in your contract that requires an `accountId`
     // Replace `getByAccount` with the actual method you wish to call and adjust parameters accordingly
     const {
       gasConsumed,
@@ -275,34 +295,17 @@ export default function Home() {
       }
   
       console.log("Starting transaction");
-      const result = await sendTransaction(api, contract, accounts[0], "addPost", [filecoin_hash, nullifier, value]);
+      const result = await sendTransaction(api, contract, accounts[0], "addPost", [filecoin_hash, nullifier, "red"]);
       console.log("Transaction result:", result);
       // Process result here
     } catch (error) {
       console.error("Transaction failed:", error);
     }
   };  
-  
+
   return (
-    <div>
-      <button onClick={loadAccountsFromExtensions}>Connect to extensions</button>
-      <h2>Signer accounts</h2>
-      <ul>
-        {accounts.map(({ address, meta: { name } }) => (
-          <li key={address}>
-            <strong>{name || "<unknown>"}</strong> {address}
-          </li>
-        ))}
-      </ul>
-      {/* <button onClick={() => queryContract("getNullifiers")}>Make transfer</button> */}
-      <div>
-        {/* Existing UI elements */}
-        <button onClick={() => handleAddPost("yes")}>Label Data</button>
-      </div>  
-      <div>
-        {/* Existing UI elements */}
-        <button onClick={(data) => queryContract("getNullifiers", [blake2AsHex("ipfs")])}>View Labels</button>
-      </div>  
-    </div>
+    <AlephContext.Provider value={{ handleAddPost, queryContract, loadAccountsFromExtensions }}>
+    {children}
+    </AlephContext.Provider>
   );
-}
+};

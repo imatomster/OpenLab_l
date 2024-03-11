@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { NavBar } from "@/components/NavBar";
 import { siteConfig } from "@/config/site";
+import { AlephProvider } from '@/context/AlephContext'; // Adjust the import path as necessary
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,8 +25,10 @@ export default function RootLayout({
           backgroundImage: "url('https://i.imgur.com/3aaKuwq.png')",
         }}
       >
-        <NavBar items={siteConfig.navBar} />
-        {children}
+        <AlephProvider>
+          <NavBar items={siteConfig.navBar} />
+          {children}
+        </AlephProvider>
       </body>
     </html>
   );
